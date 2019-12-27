@@ -102,7 +102,7 @@
     data() {
       return {
         loading: false,
-        serializeUrl: 'http://192.168.1.40:9898/api/jsonrpc', //序列化url
+        serializeUrl: 'http://localhost:9898/api/jsonrpc', //序列化url
         activeName: 'first',//tab选项
 
         //txHex
@@ -114,7 +114,7 @@
         transactionRules: {
           txHex: [
             {required: true, message: '请输入txHex', trigger: 'blur'},
-            {min: 100, max: 1000, message: 'txHex长度在 100 到 1000 个字符', trigger: 'blur'},
+            {min: 30, max: 300000, message: 'txHex长度在 30 到 300000 个字符', trigger: 'blur'},
           ],
           chainId: [
             {required: true, message: '请输入chainID', trigger: 'blur'},
@@ -136,7 +136,7 @@
         txDataRules: {
           txData: [
             {required: true, message: '请输入txData', trigger: 'blur'},
-            {min: 100, max: 1000, message: 'txData长度在 100 到 1000 个字符', trigger: 'blur'}
+            {min: 10, max: 300000, message: 'txData长度在 10 到 300000 个字符', trigger: 'blur'}
           ],
           type: [
             {required: true, message: '请选择交易类型', trigger: 'change'}
@@ -250,9 +250,9 @@
       },
       'hashForm.network': function (newVal) {
         if (Number(newVal) === 1) {
-          this.hashForm.urls = 'https://public1.nuls.io';
+          this.hashForm.urls = 'https://api.nuls.io';
         } else if (Number(newVal) === 2) {
-          this.hashForm.urls = 'https://beta.wallet.nuls.io/api';
+          this.hashForm.urls = 'https://beta.api.nuls.io';
         } else {
           this.hashForm.urls = 'http://localhost:18004';
         }
@@ -333,29 +333,106 @@
        * @date: 2019-12-23 14:28
        * @author: Wave
        */
-      submitHash(formName) {
-        this.$refs[formName].validate((valid) => {
+      async submitHash(formName) {
+        this.$refs[formName].validate(async (valid) => {
           if (valid) {
             this.hashValue = '';
-            let url = this.serializeUrl;
-            let data = [];
-            if (Number(this.hashForm.network) === 3) {
-              data = [Number(this.hashForm.network), this.hashForm.hash, this.hashForm.urls];
+            let resultData = null;
+            let url = '';
+            let net = Number(this.hashForm.network);
+            let addressPrefix = '';
+            let chainId = net;
+            if (net === 1) {
+              url = 'https://api.nuls.io/api';
+            } else if(net === 1) {
+              url = 'http://beta.api.nuls.io/api';
             } else {
-              data = [Number(this.hashForm.network), this.hashForm.hash];
+              let formUrl = this.hashForm.urls;
+              let subfix = '/api';
+              if(formUrl.substr(formUrl.length - 1, 1) === '/') {
+                subfix = 'api';
+              }
+              url = formUrl + subfix;
+              let infoResult = await this.get(url + '/info');
+              if(infoResult.success) {
+                addressPrefix = infoResult.data.addressPrefix;
+                chainId = infoResult.data.chainId;
+              }
             }
+
+            let txResult = await this.get(url + '/tx/' + this.hashForm.hash);
+            if(txResult.success) {
+              resultData = txResult.data;
+            }
+
             const params = {
               jsonrpc: "2.0",
-              method: "getTxByHash",
-              params: data,
+              method: "deserializationTxData",
+              params: [chainId, resultData.type, resultData.txDataHex, addressPrefix],
               id: Math.floor(Math.random() * 1000)
             };
-            this.loading = true;
-            this.getTransaction(url, params);
+            let txDataResult = await this.post(this.serializeUrl, params);
+            if(txDataResult.success) {
+              resultData.txData = txDataResult.data;
+            }
+
+            let contractResult = await this.get(url + '/contract/result/' + this.hashForm.hash);
+            if(contractResult.success) {
+              resultData.contractResult = contractResult.data;
+            }
+
+            this.loading = false;
+            this.hashValue = resultData;
           } else {
             return false;
           }
         });
+      },
+
+      async get(curl) {
+        return await this.getData(curl)
+                .then((response) => {
+                  return response;
+                })
+                .catch((error) => {
+                  return {success: false, data: error};
+                });
+      },
+
+      getData(url) {
+        return new Promise((resolve, reject) => {
+          axios.get(url)
+                  .then(response => {
+                    resolve(response.data)
+                  }, err => {
+                    reject(err)
+                  })
+        })
+      },
+
+      async post(url, params) {
+        return await this.postData(url, params)
+                .then((response) => {
+                  if (response.hasOwnProperty("result")) {
+                    return {success: true, data: response.result};
+                  } else {
+                    return {success: false, data: response.error};
+                  }
+                })
+                .catch((error) => {
+                  return {success: false, data: error};
+                });
+      },
+
+      postData(url, params) {
+        return new Promise((resolve, reject) => {
+          axios.post(url, params)
+                  .then(response => {
+                    resolve(response.data)
+                  }, err => {
+                    reject(err)
+                  })
+        })
       },
 
       /**
