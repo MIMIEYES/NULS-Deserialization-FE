@@ -2,7 +2,7 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
 const cn = {
   "nav": {
-    "selectItem": "序列化工具",
+    "selectItem": "反序列化工具",
     "issueToken": "导航二",
     "login": "登录",
     "user": "用户中心",

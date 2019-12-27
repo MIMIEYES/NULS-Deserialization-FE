@@ -7,15 +7,25 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: resolve => require(['@/views/Home.vue'], resolve)
     },
     {
-      path: '/deserialization',
+      path: '/',
       name: 'deserialization',
       component: resolve => require(['@/views/Deserialization.vue'], resolve)
     },
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   component: resolve => require(['@/views/Home.vue'], resolve)
+    // },
+    // {
+    //   path: '/deserialization',
+    //   name: 'deserialization',
+    //   component: resolve => require(['@/views/Deserialization.vue'], resolve)
+    // },
     {
       path: '/page2',
       name: 'page2',

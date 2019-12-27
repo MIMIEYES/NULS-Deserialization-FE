@@ -26,7 +26,7 @@
        * 获取最新高度
        */
       getBestBlockHeader() {
-        this.$post('/', 'getBestBlockHeader', [])
+        this.$post('https://public1.nuls.io/', 'getBestBlockHeader', [])
           .then((response) => {
             //console.log(response)
             if (response.hasOwnProperty("result")) {

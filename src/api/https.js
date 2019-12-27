@@ -3,7 +3,7 @@ import * as config from './../config.js'
 import {chainID} from './util'
 
 axios.defaults.timeout = config.API_TIME;
-axios.defaults.baseURL = config.API_URL;
+// axios.defaults.baseURL = config.API_URL;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**

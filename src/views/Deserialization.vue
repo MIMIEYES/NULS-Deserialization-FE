@@ -28,7 +28,7 @@
           </el-form>
         </div>
         <div class="w_r fr" v-show="transactionValue">
-          <json-viewer :value="transactionValue" :expand-depth="5" copyable boxed>
+          <json-viewer :value="transactionValue" :expand-depth="5" copyable>
           </json-viewer>
         </div>
       </el-tab-pane>
@@ -59,7 +59,7 @@
           </el-form>
         </div>
         <div class="w_r fr" v-show="txDataValue">
-          <json-viewer :value="txDataValue" :expand-depth="5" copyable boxed>
+          <json-viewer :value="txDataValue" :expand-depth="5" copyable>
           </json-viewer>
         </div>
       </el-tab-pane>
@@ -87,7 +87,7 @@
           </el-form>
         </div>
         <div class="w_r fr" v-show="hashValue">
-          <json-viewer :value="hashValue" :expand-depth="5" copyable boxed>
+          <json-viewer :value="hashValue" :expand-depth="5" copyable>
           </json-viewer>
         </div>
       </el-tab-pane>
@@ -102,7 +102,8 @@
     data() {
       return {
         loading: false,
-        serializeUrl: 'http://localhost:9898/api/jsonrpc', //序列化url
+        serializeUrl: '/api/jsonrpc', //序列化url
+        // serializeUrl: 'http://localhost:9898/api/jsonrpc', //序列化url
         activeName: 'first',//tab选项
 
         //txHex
@@ -180,7 +181,7 @@
 
         //hashForm
         hashForm: {
-          network: '',
+          network: '1',
           urls: '',
           hash: '',
         },
@@ -252,7 +253,7 @@
         if (Number(newVal) === 1) {
           this.hashForm.urls = 'https://api.nuls.io';
         } else if (Number(newVal) === 2) {
-          this.hashForm.urls = 'https://beta.api.nuls.io';
+          this.hashForm.urls = 'http://beta.api.nuls.io';
         } else {
           this.hashForm.urls = 'http://localhost:18004';
         }
@@ -268,12 +269,11 @@
        */
       handleClick(tab) {
         if (tab.name === 'first') {
-          this.$refs['txDataForm'].resetFields();
+          // this.$refs['txDataForm'].resetFields();
         } else if (tab.name === 'second') {
-          this.$refs['transactionForm'].resetFields();
-        }
-        else {
-          this.$refs['transactionForm'].resetFields();
+          // this.$refs['transactionForm'].resetFields();
+        } else {
+          // this.$refs['hashForm'].resetFields();
         }
       },
 
@@ -342,45 +342,54 @@
             let net = Number(this.hashForm.network);
             let addressPrefix = '';
             let chainId = net;
-            if (net === 1) {
-              url = 'https://api.nuls.io/api';
-            } else if(net === 1) {
-              url = 'http://beta.api.nuls.io/api';
-            } else {
-              let formUrl = this.hashForm.urls;
-              let subfix = '/api';
-              if(formUrl.substr(formUrl.length - 1, 1) === '/') {
-                subfix = 'api';
+            let done = false;
+            do {
+              if (net === 1) {
+                url = 'https://api.nuls.io/api';
+              } else if(net === 2) {
+                url = 'http://beta.api.nuls.io/api';
+              } else {
+                let formUrl = this.hashForm.urls;
+                let subfix = '/api';
+                if(formUrl.substr(formUrl.length - 1, 1) === '/') {
+                  subfix = 'api';
+                }
+                url = formUrl + subfix;
+                let infoResult = await this.get(url + '/info');
+                if(infoResult.success) {
+                  addressPrefix = infoResult.data.addressPrefix;
+                  chainId = infoResult.data.chainId;
+                } else {
+                  resultData = infoResult;
+                  break;
+                }
               }
-              url = formUrl + subfix;
-              let infoResult = await this.get(url + '/info');
-              if(infoResult.success) {
-                addressPrefix = infoResult.data.addressPrefix;
-                chainId = infoResult.data.chainId;
+
+              let txResult = await this.get(url + '/tx/' + this.hashForm.hash);
+              if(txResult.success) {
+                resultData = txResult.data;
+              } else {
+                  resultData = txResult;
+                  break;
               }
-            }
 
-            let txResult = await this.get(url + '/tx/' + this.hashForm.hash);
-            if(txResult.success) {
-              resultData = txResult.data;
-            }
+              const params = {
+                jsonrpc: "2.0",
+                method: "deserializationTxData",
+                params: [chainId, resultData.type, resultData.txDataHex, addressPrefix],
+                id: Math.floor(Math.random() * 1000)
+              };
+              let txDataResult = await this.post(this.serializeUrl, params);
+              if(txDataResult.success) {
+                resultData.txData = txDataResult.data;
+              }
 
-            const params = {
-              jsonrpc: "2.0",
-              method: "deserializationTxData",
-              params: [chainId, resultData.type, resultData.txDataHex, addressPrefix],
-              id: Math.floor(Math.random() * 1000)
-            };
-            let txDataResult = await this.post(this.serializeUrl, params);
-            if(txDataResult.success) {
-              resultData.txData = txDataResult.data;
-            }
+              let contractResult = await this.get(url + '/contract/result/' + this.hashForm.hash);
+              if(contractResult.success) {
+                resultData.contractResult = contractResult.data;
+              }
 
-            let contractResult = await this.get(url + '/contract/result/' + this.hashForm.hash);
-            if(contractResult.success) {
-              resultData.contractResult = contractResult.data;
-            }
-
+            } while (done);
             this.loading = false;
             this.hashValue = resultData;
           } else {
