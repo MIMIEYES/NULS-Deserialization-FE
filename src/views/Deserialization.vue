@@ -68,12 +68,14 @@
           <el-form :model="hashForm" :rules="hashRules" ref="hashForm" label-width="110px" class="hash_form">
             <el-form-item label="接入网络" prop="network">
               <el-radio-group v-model="hashForm.network">
-                <el-radio label="1">主网</el-radio>
-                <el-radio label="2">测试网</el-radio>
-                <el-radio label="3">其他</el-radio>
+                <el-radio label="1">主网&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-radio>
+                <el-radio label="2">测试网&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-radio>
+                <el-radio label="9">Nerve主网&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-radio>
+                <el-radio label="5">Nerve测试网&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-radio>
+                <el-radio label="99">其他&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="网络地址" prop="urls" v-if="hashForm.network ==='3'">
+            <el-form-item label="网络地址" prop="urls" v-if="hashForm.network ==='99'">
               <el-input v-model="hashForm.urls">
               </el-input>
             </el-form-item>
@@ -177,7 +179,23 @@
           {value: 23, label: "23-合约注销节点"},
           {value: 24, label: "24-验证人变更"},
           {value: 25, label: "25-验证人初始化"},
-        ],//类型列表
+          {value: 40, label: "40-确认虚拟银行变更"},
+          {value: 41, label: "41-虚拟银行变更"},
+          {value: 42, label: "42-跨链转入"},
+          {value: 43, label: "43-跨链转出"},
+          {value: 44, label: "44-确认提现成功"},
+          {value: 45, label: "45-发起提案"},
+          {value: 46, label: "46-提案投票"},
+          {value: 47, label: "47-异构链交易手续费补贴"},
+          {value: 48, label: "48-虚拟银行初始化异构链"},
+          {value: 49, label: "49-异构链合约资产注册"},
+          {value: 50, label: "50-异构链合约资产注册完成"},
+          {value: 51, label: "51-确认提案执行交易"},
+          {value: 52, label: "52-重置异构链(合约)虚拟银行"},
+          {value: 53, label: "53-确认重置异构链(合约)虚拟银行"},
+          {value: 56, label: "56-追加手续费"},
+
+    ],//类型列表
 
         //hashForm
         hashForm: {
@@ -224,6 +242,21 @@
           {value: 23, label: "23-合约注销节点"},
           {value: 24, label: "24-验证人变更"},
           {value: 25, label: "25-验证人初始化"},
+          {value: 40, label: "40-确认虚拟银行变更"},
+          {value: 41, label: "41-虚拟银行变更"},
+          {value: 42, label: "42-跨链转入"},
+          {value: 43, label: "43-跨链转出"},
+          {value: 44, label: "44-确认提现成功"},
+          {value: 45, label: "45-发起提案"},
+          {value: 46, label: "46-提案投票"},
+          {value: 47, label: "47-异构链交易手续费补贴"},
+          {value: 48, label: "48-虚拟银行初始化异构链"},
+          {value: 49, label: "49-异构链合约资产注册"},
+          {value: 50, label: "50-异构链合约资产注册完成"},
+          {value: 51, label: "51-确认提案执行交易"},
+          {value: 52, label: "52-重置异构链(合约)虚拟银行"},
+          {value: 53, label: "53-确认重置异构链(合约)虚拟银行"},
+          {value: 56, label: "56-追加手续费"},
         ],//类型列表
 
       };
@@ -236,6 +269,10 @@
           this.transactionForm.prdfix = 'NULS';
         } else if (Number(newVal) === 2) {
           this.transactionForm.prdfix = 'tNULS';
+        } else if (Number(newVal) === 9) {
+          this.transactionForm.prdfix = 'NERVE';
+        } else if (Number(newVal) === 5) {
+          this.transactionForm.prdfix = 'TNVT';
         } else {
           this.transactionForm.prdfix = '';
         }
@@ -245,6 +282,10 @@
           this.txDataForm.prdfix = 'NULS';
         } else if (Number(newVal) === 2) {
           this.txDataForm.prdfix = 'tNULS';
+        } else if (Number(newVal) === 9) {
+          this.txDataForm.prdfix = 'NERVE';
+        } else if (Number(newVal) === 5) {
+          this.txDataForm.prdfix = 'TNVT';
         } else {
           this.txDataForm.prdfix = '';
         }
@@ -254,6 +295,10 @@
           this.hashForm.urls = 'https://api.nuls.io';
         } else if (Number(newVal) === 2) {
           this.hashForm.urls = 'http://beta.api.nuls.io';
+        } else if (Number(newVal) === 9) {
+          this.hashForm.urls = 'https://api.nerve.network';
+        } else if (Number(newVal) === 5) {
+          this.hashForm.urls = 'http://beta.api.nerve.network';
         } else {
           this.hashForm.urls = 'http://localhost:18004';
         }
@@ -348,6 +393,10 @@
                 url = 'https://api.nuls.io/api';
               } else if(net === 2) {
                 url = 'http://beta.api.nuls.io/api';
+              } else if(net === 9) {
+                url = 'https://api.nerve.network/api';
+              } else if(net === 5) {
+                url = 'http://beta.api.nerve.network/api';
               } else {
                 let formUrl = this.hashForm.urls;
                 let subfix = '/api';
