@@ -93,12 +93,49 @@
           </json-viewer>
         </div>
       </el-tab-pane>
+      <el-tab-pane label="无常损失计算" name="four">
+        <div class="fl w_f">
+          <el-form :model="swapForm" :rules="swapRules" ref="hashForm" label-width="110px" class="hash_form">
+            <el-form-item label="流动性池" prop="pool" >NULS-USD</el-form-item>
+            <el-form-item label="接入网络" prop="swap">
+              <el-radio-group v-model="swapForm.swap">
+                <el-radio label="1">Pancake Swap</el-radio>
+                <el-radio label="2">Mdex Swap</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="NULS价格" prop="nulsPrice" >
+              <el-input v-model="swapForm.nulsPrice" />
+            </el-form-item>
+            <el-form-item label="账户地址" prop="account" >
+              <el-input v-model="swapForm.account" />
+            </el-form-item>
+            <el-form-item label="账户别名(选填)" prop="alias" >
+              <el-input v-model="swapForm.alias" />
+            </el-form-item>
+            <el-form-item label="总投入的NULS" prop="nulsAmount">
+              <el-input v-model.trim="swapForm.nulsAmount" />
+            </el-form-item>
+            <el-form-item label="总投入的USD" prop="usdAmount">
+              <el-input v-model.trim="swapForm.usdAmount" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="success" @click="submitSwap('hashForm')">查询无常损失</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="w_r fr" v-show="swapValue">
+          <json-viewer :value="swapValue" :expand-depth="5" copyable>
+          </json-viewer>
+        </div>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
+  // import ethers from 'ethers'
+  let ethers = require('ethers');
 
   export default {
     data() {
@@ -108,6 +145,16 @@
         // serializeUrl: 'http://localhost:9898/api/jsonrpc', //序列化url
         activeName: 'first',//tab选项
 
+        //ethers settings
+        ethersSetting: {
+          farmAbiFragment: [
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"rewardDebt","type":"uint256"}],"stateMutability":"view","type":"function"}
+          ],
+          lpAbiFragment: [
+            {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
+            {"constant":true,"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint112","name":"_reserve0","type":"uint112"},{"internalType":"uint112","name":"_reserve1","type":"uint112"},{"internalType":"uint32","name":"_blockTimestampLast","type":"uint32"}],"payable":false,"stateMutability":"view","type":"function"}
+          ]
+        },
         //txHex
         transactionForm: {
           txHex: '',
@@ -195,7 +242,7 @@
           {value: 53, label: "53-确认重置异构链(合约)虚拟银行"},
           {value: 56, label: "56-追加手续费"},
 
-    ],//类型列表
+        ],//类型列表
 
         //hashForm
         hashForm: {
@@ -259,6 +306,46 @@
           {value: 56, label: "56-追加手续费"},
         ],//类型列表
 
+        //swapForm
+        swapForm: {
+          swap: '1',
+          nulsPrice: 0,
+          account: '',
+          alias: '',
+          nulsAmount: '0',
+          usdAmount: '0',
+          rpc: 'https://bsc-dataseed.binance.org/'
+        },
+        swapRules: {
+          swap: [
+            {required: true, message: '请选择Swap接入', trigger: 'blur'}
+          ],
+          nulsPrice: [
+            {required: true, message: '请输入NULS价格', trigger: 'blur'},
+          ],
+          account: [
+            {required: true, message: '请输入账户地址', trigger: 'blur'},
+          ],
+          nulsAmount: [
+            {required: true, message: '请输入总投入的NULS', trigger: 'blur'},
+          ],
+          usdAmount: [
+            {required: true, message: '请输入总投入的USD', trigger: 'blur'},
+          ]
+        },
+        swapValue: {}, //查询数据
+        mdex: {
+          farmsContract: '0xfb03e11d93632d97a8981158a632dd5986f5e909',
+          lpContract: '0x6443099559de3204bb3a4b128b641f8879df838f',
+          NULS_BUSD_ID: 83,
+          nulsIndex: 1
+        },
+        pancake: {
+          farmsContract: '0x73feaa1eE314F8c655E354234017bE2193C9E24E',
+          lpContract: '0x853784b7bde87d858555715c0123374242db7943',
+          NULS_BUSD_ID: 319,
+          nulsIndex: 0
+        }
       };
     },
     created() {
@@ -303,6 +390,29 @@
           this.hashForm.urls = 'http://localhost:18004';
         }
       },
+      'swapForm.swap': function (newVal) {
+        if (Number(newVal) === 1) {
+          this.swapForm.rpc = 'https://bsc-dataseed.binance.org/';
+        } else if (Number(newVal) === 2) {
+          this.swapForm.rpc = 'https://http-mainnet.hecochain.com';
+        } else {
+          this.swapForm.rpc = '';
+        }
+        this.swapForm.account = '';
+        this.swapForm.nulsAmount = '';
+        this.swapForm.usdAmount = '';
+        this.swapForm.alias = '';
+      },
+      'swapForm.account': function (newVal) {
+        this.swapForm.nulsAmount = this.$cookies.get(newVal+'_nuls_'+this.swapForm.swap);
+        this.swapForm.usdAmount = this.$cookies.get(newVal+'_usd_'+this.swapForm.swap);
+      },
+      'swapForm.alias': function (newVal) {
+        let address = this.$cookies.get('swap_'+newVal);
+        if (address) {
+          this.swapForm.account = address;
+        }
+      },
     },
     methods: {
 
@@ -317,8 +427,8 @@
           // this.$refs['txDataForm'].resetFields();
         } else if (tab.name === 'second') {
           // this.$refs['transactionForm'].resetFields();
-        } else {
-          // this.$refs['hashForm'].resetFields();
+        } else if (tab.name === 'four'){
+          this.getNulsPrice();
         }
       },
 
@@ -447,6 +557,94 @@
         });
       },
 
+      async getNulsPrice() {
+        //查询nuls的usd价格
+        const params = {
+          jsonrpc: "2.0",
+          method: "getSymbolInfo",
+          params: [1, 1],
+          id: Math.floor(Math.random() * 1000)
+        };
+        let nulsSymbolResult = await this.post('https://public.nerve.network/', params);
+        if(nulsSymbolResult.success) {
+          this.swapForm.nulsPrice = nulsSymbolResult.data.usdPrice;
+        }
+      },
+
+      async submitSwap(formName) {
+
+        this.$refs[formName].validate(async (valid) => {
+          if (valid) {
+            let result = {
+              _00: '', _01: '', _02: '', _03: '', _04: '', _05: '', _06: '', _07: '', _08: '', _09: '', _10: '', _11: ''
+            };
+            this.swapValue = '';
+            // let url = 'https://bsc-dataseed.binance.org/';
+            // if (this.swapForm.swap === '2') {
+            //   url = 'https://http-mainnet.hecochain.com';
+            // }
+            let dataSwap = this.pancake;
+            if (this.swapForm.swap === '2') {
+              dataSwap = this.mdex;
+            }
+            let url = this.swapForm.rpc;
+            let provider = new ethers.providers.JsonRpcProvider(url);
+            let userAddress = this.swapForm.account;
+            let farmsContract = dataSwap.farmsContract;
+            let lpContract = dataSwap.lpContract;
+            let NULS_BUSD_ID = dataSwap.NULS_BUSD_ID;
+            let nulsIndex = dataSwap.nulsIndex;
+            let myNuls = this.swapForm.nulsAmount;
+            let myBusd = this.swapForm.usdAmount;
+            let nulsPrice = this.swapForm.nulsPrice;
+            result._00 = "当前NULS价格: " + nulsPrice + " USD/NULS";
+            let zero = new ethers.utils.BigNumber('0');
+            let myLp = await this.getUserLp(farmsContract, NULS_BUSD_ID, userAddress, provider);
+            if (zero.eq(myLp)) {
+              this.swapValue = {error: "此账户无效"};
+              return false;
+            }
+            result._01 = "我的LP（流动性份额）: " + ethers.utils.formatEther(myLp);
+            let totalSupply = await this.getTotalSupplyOfLp(lpContract, provider);
+            result._02 = "LP总流通量: " + ethers.utils.formatEther(totalSupply);
+            let yz = new ethers.utils.BigNumber(ethers.utils.parseEther(myLp.toString())).div(new ethers.utils.BigNumber(totalSupply));
+            let reserves = await this.getReservesOfLp(lpContract, provider);
+            let _nuls = nulsIndex === 0 ? reserves._reserve0 : reserves._reserve1;
+            let _busd = nulsIndex === 0 ? reserves._reserve1 : reserves._reserve0;
+            result._03 = "流动池的 NULS: " + ethers.utils.formatUnits(_nuls, 8);
+            result._04 = "流动池的 USD: " + ethers.utils.formatEther(_busd);
+            result._05 = "我提供了 NULS: " + myNuls;
+            result._06 = "我提供了 USD: " + myBusd;
+            let nowNuls = _nuls.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
+            let nowBusd = _busd.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
+            result._07 = "我能换出的 NULS: " + ethers.utils.formatUnits(nowNuls, 8);
+            result._08 = "我能换出的 USD: " + ethers.utils.formatUnits(nowBusd, 18)
+            let dNuls = nowNuls.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myNuls, 8)));
+            let flagNuls = dNuls.lt(zero) ? '少' : '多';
+            let dBusd = nowBusd.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myBusd, 18)));
+            let flagBusd = dBusd.lt(zero) ? '少' : '多';
+
+            let nuls2usd = dNuls.abs().mul(new ethers.utils.BigNumber(ethers.utils.parseUnits(nulsPrice + '', 4))).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 4)));
+            result._09 = "NULS "+flagNuls+"了: "+ethers.utils.formatUnits(dNuls, 8)+"，折算成 USD: " + ethers.utils.formatUnits(nuls2usd, 8);
+            result._10 = " USD "+flagBusd+"了: " + ethers.utils.formatUnits(dBusd, 18);
+
+            let finalAward = dBusd.add(nuls2usd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 10))));
+            result._11 = "金本位实际收益: " + ethers.utils.formatUnits(finalAward, 18);
+            this.loading = false;
+            this.swapValue = result;
+            // 设置 cookies
+            let alias = this.swapForm.alias;
+            if (alias) {
+              this.$cookies.set('swap_'+alias, userAddress);
+            }
+            this.$cookies.set(userAddress+'_nuls_'+this.swapForm.swap, myNuls);
+            this.$cookies.set(userAddress+'_usd_'+this.swapForm.swap, myBusd);
+          } else {
+            return false;
+          }
+        });
+      },
+
       async get(curl) {
         return await this.getData(curl)
                 .then((response) => {
@@ -525,6 +723,27 @@
             this.loading = false;
           });
       },
+
+      async getUserLp(farmsContract, NULS_BUSD_ID, userAddress, provider) {
+        let contract = new ethers.Contract(farmsContract, this.ethersSetting.farmAbiFragment, provider);
+        return await contract.userInfo(NULS_BUSD_ID, userAddress).then((info) => {
+          return info.amount;
+        });
+      },
+
+      async getTotalSupplyOfLp(lpContract, provider) {
+        let contract = new ethers.Contract(lpContract, this.ethersSetting.lpAbiFragment, provider);
+        return await contract.totalSupply().then((totalSupply) => {
+          return totalSupply.toString();
+        });
+      },
+
+      async getReservesOfLp(lpContract, provider) {
+        let contract = new ethers.Contract(lpContract, this.ethersSetting.lpAbiFragment, provider);
+        return await contract.getReserves().then((reserves) => {
+          return reserves;
+        });
+      }
 
     }
   }
