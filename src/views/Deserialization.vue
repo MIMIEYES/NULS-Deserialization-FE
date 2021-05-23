@@ -576,7 +576,7 @@
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
             let result = {
-              _00: '', _01: '', _02: '', _03: '', _04: '', _05: '', _06: '', _07: '', _08: '', _09: '', _10: '', _11: ''
+              _00: '', _01: '', _02: '', _03: '', _04: '', _05: '', _06: '', _07: '', _08: '', _09: '', _10: '', _11: '', _12: ''
             };
             this.swapValue = '';
             // let url = 'https://bsc-dataseed.binance.org/';
@@ -625,11 +625,21 @@
             let flagBusd = dBusd.lt(zero) ? '少' : '多';
 
             let nuls2usd = dNuls.abs().mul(new ethers.utils.BigNumber(ethers.utils.parseUnits(nulsPrice + '', 4))).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 4)));
-            result._09 = "NULS "+flagNuls+"了: "+ethers.utils.formatUnits(dNuls, 8)+"，折算成 USD: " + ethers.utils.formatUnits(nuls2usd, 8);
-            result._10 = " USD "+flagBusd+"了: " + ethers.utils.formatUnits(dBusd, 18);
+            result._09 = "NULS "+flagNuls+"了: "+ethers.utils.formatUnits(dNuls.abs(), 8)+"，折算成 USD: " + ethers.utils.formatUnits(nuls2usd, 8);
+            result._10 = " USD "+flagBusd+"了: " + ethers.utils.formatUnits(dBusd.abs(), 18);
 
             let finalAward = dBusd.add(nuls2usd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 10))));
-            result._11 = "金本位实际收益: " + ethers.utils.formatUnits(finalAward, 18);
+            if (zero.gt(finalAward)) {
+              result._11 = "无常损失: " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
+            } else {
+              result._11 = "无常损失: 0，流动性实际收益:  " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
+            }
+            let totalAward = dBusd.mul(2);
+            if (zero.gt(totalAward)) {
+              result._12 = "金本位损失: " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
+            } else {
+              result._12 = "金本位收益:  " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
+            }
             this.loading = false;
             this.swapValue = result;
             // 设置 cookies
