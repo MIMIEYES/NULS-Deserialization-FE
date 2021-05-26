@@ -103,9 +103,6 @@
                 <el-radio label="2">Mdex Swap</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="NULS价格" prop="nulsPrice" >
-              <el-input v-model="swapForm.nulsPrice" />
-            </el-form-item>
             <el-form-item label="账户地址" prop="account" >
               <el-input v-model="swapForm.account" />
             </el-form-item>
@@ -402,6 +399,7 @@
         this.swapForm.nulsAmount = '';
         this.swapForm.usdAmount = '';
         this.swapForm.alias = '';
+        this.swapForm.nulsPrice = '';
       },
       'swapForm.account': function (newVal) {
         this.swapForm.nulsAmount = this.$cookies.get(newVal+'_nuls_'+this.swapForm.swap);
@@ -428,7 +426,7 @@
         } else if (tab.name === 'second') {
           // this.$refs['transactionForm'].resetFields();
         } else if (tab.name === 'four'){
-          this.getNulsPrice();
+          // this.getNulsPrice();
         }
       },
 
@@ -596,8 +594,7 @@
             let nulsIndex = dataSwap.nulsIndex;
             let myNuls = this.swapForm.nulsAmount;
             let myBusd = this.swapForm.usdAmount;
-            let nulsPrice = this.swapForm.nulsPrice;
-            result._00 = "当前NULS价格: " + nulsPrice + " USD/NULS";
+
             let zero = new ethers.utils.BigNumber('0');
             let myLp = await this.getUserLp(farmsContract, NULS_BUSD_ID, userAddress, provider);
             if (zero.eq(myLp)) {
@@ -613,6 +610,13 @@
             let _busd = nulsIndex === 0 ? reserves._reserve1 : reserves._reserve0;
             result._03 = "流动池的 NULS: " + ethers.utils.formatUnits(_nuls, 8);
             result._04 = "流动池的 USD: " + ethers.utils.formatEther(_busd);
+
+            let usdNumber = _busd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 8 + 4)));
+            let nulsNumber = _nuls.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
+            let _price = usdNumber.div(nulsNumber);
+            let nulsPrice = ethers.utils.formatUnits(_price, 4);
+            this.swapForm.nulsPrice = nulsPrice;
+            result._00 = "当前NULS价格: " + nulsPrice + " USD/NULS";
             result._05 = "我提供了 NULS: " + myNuls;
             result._06 = "我提供了 USD: " + myBusd;
             let nowNuls = _nuls.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
@@ -645,10 +649,10 @@
             // 设置 cookies
             let alias = this.swapForm.alias;
             if (alias) {
-              this.$cookies.set('swap_'+alias, userAddress);
+              this.$cookies.set('swap_'+alias, userAddress, -1);
             }
-            this.$cookies.set(userAddress+'_nuls_'+this.swapForm.swap, myNuls);
-            this.$cookies.set(userAddress+'_usd_'+this.swapForm.swap, myBusd);
+            this.$cookies.set(userAddress+'_nuls_'+this.swapForm.swap, myNuls, -1);
+            this.$cookies.set(userAddress+'_usd_'+this.swapForm.swap, myBusd, -1);
           } else {
             return false;
           }
