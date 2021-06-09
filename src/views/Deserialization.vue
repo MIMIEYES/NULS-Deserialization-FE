@@ -96,11 +96,15 @@
       <el-tab-pane label="无常损失计算" name="four">
         <div class="fl w_f">
           <el-form :model="swapForm" :rules="swapRules" ref="swapForm" label-width="110px" class="swap_form">
-            <el-form-item label="流动性池" prop="pool" >NULS-USD</el-form-item>
+            <el-form-item label="流动性池" prop="pool" >
+              <el-input v-model="swapForm.pool" :readonly="true" >NULS-USD</el-input>
+              <!--NULS-USD-->
+            </el-form-item>
             <el-form-item label="接入网络" prop="swap">
               <el-radio-group v-model="swapForm.swap">
                 <el-radio label="1">Pancake Swap</el-radio>
                 <el-radio label="2">Mdex Swap</el-radio>
+                <el-radio label="3">Dodo Swap</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="账户地址" prop="account" >
@@ -109,10 +113,10 @@
             <el-form-item label="账户别名(选填)" prop="alias" >
               <el-input v-model="swapForm.alias" />
             </el-form-item>
-            <el-form-item label="总投入的NULS" prop="nulsAmount">
+            <el-form-item :label="`总投入 ${swapForm.name}`" prop="nulsAmount">
               <el-input v-model.trim="swapForm.nulsAmount" />
             </el-form-item>
-            <el-form-item label="总投入的USD" prop="usdAmount">
+            <el-form-item label="总投入 USD" prop="usdAmount">
               <el-input v-model.trim="swapForm.usdAmount" />
             </el-form-item>
             <el-form-item>
@@ -150,6 +154,12 @@
           lpAbiFragment: [
             {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
             {"constant":true,"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint112","name":"_reserve0","type":"uint112"},{"internalType":"uint112","name":"_reserve1","type":"uint112"},{"internalType":"uint32","name":"_blockTimestampLast","type":"uint32"}],"payable":false,"stateMutability":"view","type":"function"}
+          ],
+          dodoLpAbiFragment: [
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Burn","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"increaseShares","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalShares","type":"uint256"}],"name":"BuyShares","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"borrower","type":"address"},{"indexed":false,"internalType":"address","name":"assetTo","type":"address"},{"indexed":false,"internalType":"uint256","name":"baseAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"quoteAmount","type":"uint256"}],"name":"DODOFlashLoan","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"fromToken","type":"address"},{"indexed":false,"internalType":"address","name":"toToken","type":"address"},{"indexed":false,"internalType":"uint256","name":"fromAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"toAmount","type":"uint256"},{"indexed":false,"internalType":"address","name":"trader","type":"address"},{"indexed":false,"internalType":"address","name":"receiver","type":"address"}],"name":"DODOSwap","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"payer","type":"address"},{"indexed":false,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"decreaseShares","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalShares","type":"uint256"}],"name":"SellShares","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"DOMAIN_SEPARATOR","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PERMIT_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_BASE_PRICE_CUMULATIVE_LAST_","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_BASE_RESERVE_","outputs":[{"internalType":"uint112","name":"","type":"uint112"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_BASE_TOKEN_","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_BLOCK_TIMESTAMP_LAST_","outputs":[{"internalType":"uint32","name":"","type":"uint32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_IS_OPEN_TWAP_","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_I_","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_K_","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_LP_FEE_RATE_","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_MAINTAINER_","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_MT_FEE_RATE_MODEL_","outputs":[{"internalType":"contract IFeeRateModel","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_QUOTE_RESERVE_","outputs":[{"internalType":"uint112","name":"","type":"uint112"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_QUOTE_TOKEN_","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_addr","type":"address"}],"name":"addressToShortString","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"buyShares","outputs":[{"internalType":"uint256","name":"shares","type":"uint256"},{"internalType":"uint256","name":"baseInput","type":"uint256"},{"internalType":"uint256","name":"quoteInput","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"baseAmount","type":"uint256"},{"internalType":"uint256","name":"quoteAmount","type":"uint256"},{"internalType":"address","name":"assetTo","type":"address"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"flashLoan","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getBaseInput","outputs":[{"internalType":"uint256","name":"input","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getMidPrice","outputs":[{"internalType":"uint256","name":"midPrice","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getPMMState","outputs":[{"components":[{"internalType":"uint256","name":"i","type":"uint256"},{"internalType":"uint256","name":"K","type":"uint256"},{"internalType":"uint256","name":"B","type":"uint256"},{"internalType":"uint256","name":"Q","type":"uint256"},{"internalType":"uint256","name":"B0","type":"uint256"},{"internalType":"uint256","name":"Q0","type":"uint256"},{"internalType":"enum PMMPricing.RState","name":"R","type":"uint8"}],"internalType":"struct PMMPricing.PMMState","name":"state","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getPMMStateForCall","outputs":[{"internalType":"uint256","name":"i","type":"uint256"},{"internalType":"uint256","name":"K","type":"uint256"},{"internalType":"uint256","name":"B","type":"uint256"},{"internalType":"uint256","name":"Q","type":"uint256"},{"internalType":"uint256","name":"B0","type":"uint256"},{"internalType":"uint256","name":"Q0","type":"uint256"},{"internalType":"uint256","name":"R","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getQuoteInput","outputs":[{"internalType":"uint256","name":"input","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserFeeRate","outputs":[{"internalType":"uint256","name":"lpFeeRate","type":"uint256"},{"internalType":"uint256","name":"mtFeeRate","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getVaultReserve","outputs":[{"internalType":"uint256","name":"baseReserve","type":"uint256"},{"internalType":"uint256","name":"quoteReserve","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"maintainer","type":"address"},{"internalType":"address","name":"baseTokenAddress","type":"address"},{"internalType":"address","name":"quoteTokenAddress","type":"address"},{"internalType":"uint256","name":"lpFeeRate","type":"uint256"},{"internalType":"address","name":"mtFeeRateModel","type":"address"},{"internalType":"uint256","name":"i","type":"uint256"},{"internalType":"uint256","name":"k","type":"uint256"},{"internalType":"bool","name":"isOpenTWAP","type":"bool"}],"name":"init","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"nonces","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"permit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"trader","type":"address"},{"internalType":"uint256","name":"payBaseAmount","type":"uint256"}],"name":"querySellBase","outputs":[{"internalType":"uint256","name":"receiveQuoteAmount","type":"uint256"},{"internalType":"uint256","name":"mtFee","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"trader","type":"address"},{"internalType":"uint256","name":"payQuoteAmount","type":"uint256"}],"name":"querySellQuote","outputs":[{"internalType":"uint256","name":"receiveBaseAmount","type":"uint256"},{"internalType":"uint256","name":"mtFee","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"sellBase","outputs":[{"internalType":"uint256","name":"receiveQuoteAmount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"sellQuote","outputs":[{"internalType":"uint256","name":"receiveBaseAmount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"shareAmount","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"baseMinAmount","type":"uint256"},{"internalType":"uint256","name":"quoteMinAmount","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"sellShares","outputs":[{"internalType":"uint256","name":"baseAmount","type":"uint256"},{"internalType":"uint256","name":"quoteAmount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"sync","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}
+          ],
+          dodoFarmAbiFragment: [
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"i","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"reward","type":"uint256"}],"name":"Claim","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"i","type":"uint256"},{"indexed":false,"internalType":"address","name":"rewardToken","type":"address"}],"name":"NewRewardToken","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferPrepared","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"rewardToken","type":"address"}],"name":"RemoveRewardToken","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"i","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endBlock","type":"uint256"}],"name":"UpdateEndBlock","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"i","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"rewardPerBlock","type":"uint256"}],"name":"UpdateReward","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"i","type":"uint256"}],"name":"WithdrawLeftOver","type":"event"},{"inputs":[],"name":"_NEW_OWNER_","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_OWNER_","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_TOKEN_","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rewardToken","type":"address"},{"internalType":"uint256","name":"rewardPerBlock","type":"uint256"},{"internalType":"uint256","name":"startBlock","type":"uint256"},{"internalType":"uint256","name":"endBlock","type":"uint256"}],"name":"addRewardToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimAllRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"rewardToken","type":"address"}],"name":"getIdByRewardToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getPendingReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"address","name":"rewardToken","type":"address"}],"name":"getPendingRewardByToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getRewardNum","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"}],"name":"getRewardTokenById","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"token","type":"address"}],"name":"init","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"initOwner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"rewardToken","type":"address"}],"name":"removeRewardToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rewardTokenInfos","outputs":[{"internalType":"address","name":"rewardToken","type":"address"},{"internalType":"uint256","name":"startBlock","type":"uint256"},{"internalType":"uint256","name":"endBlock","type":"uint256"},{"internalType":"address","name":"rewardVault","type":"address"},{"internalType":"uint256","name":"rewardPerBlock","type":"uint256"},{"internalType":"uint256","name":"accRewardPerShare","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"},{"internalType":"uint256","name":"newEndBlock","type":"uint256"}],"name":"setEndBlock","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"},{"internalType":"uint256","name":"newRewardPerBlock","type":"uint256"}],"name":"setReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"i","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawLeftOver","outputs":[],"stateMutability":"nonpayable","type":"function"}
           ]
         },
         //txHex
@@ -305,6 +315,8 @@
 
         //swapForm
         swapForm: {
+          name: 'NULS',
+          pool: 'NULS-USD',
           swap: '1',
           nulsPrice: 0,
           account: '',
@@ -341,6 +353,11 @@
           farmsContract: '0x73feaa1eE314F8c655E354234017bE2193C9E24E',
           lpContract: '0x853784b7bde87d858555715c0123374242db7943',
           NULS_BUSD_ID: 319,
+          nulsIndex: 0
+        },
+        dodo: {
+          farmsContract: '0x0cF35405C60d8a6BEa71C88461D0dE7B4fD7d552',
+          lpContract: '0x1Eb7d209D36C4527Cc5f0e94e4d3C2dCF96570BE',
           nulsIndex: 0
         }
       };
@@ -390,10 +407,20 @@
       'swapForm.swap': function (newVal) {
         if (Number(newVal) === 1) {
           this.swapForm.rpc = 'https://bsc-dataseed.binance.org/';
+          this.swapForm.pool = 'NULS-USD';
+          this.swapForm.name = 'NULS';
         } else if (Number(newVal) === 2) {
           this.swapForm.rpc = 'https://http-mainnet.hecochain.com';
+          this.swapForm.pool = 'NULS-USD';
+          this.swapForm.name = 'NULS';
+        } else if (Number(newVal) === 3) {
+          this.swapForm.rpc = 'https://bsc-dataseed.binance.org/';
+          this.swapForm.pool = 'NVT-USD';
+          this.swapForm.name = 'NVT';
         } else {
           this.swapForm.rpc = '';
+          this.swapForm.pool = '';
+          this.swapForm.name = '';
         }
         this.swapForm.account = '';
         this.swapForm.nulsAmount = '';
@@ -584,66 +611,120 @@
             let dataSwap = this.pancake;
             if (this.swapForm.swap === '2') {
               dataSwap = this.mdex;
+            } else if (this.swapForm.swap === '3') {
+              dataSwap = this.dodo;
             }
             let url = this.swapForm.rpc;
             let provider = new ethers.providers.JsonRpcProvider(url);
             let userAddress = this.swapForm.account;
             let farmsContract = dataSwap.farmsContract;
             let lpContract = dataSwap.lpContract;
-            let NULS_BUSD_ID = dataSwap.NULS_BUSD_ID;
             let nulsIndex = dataSwap.nulsIndex;
             let myNuls = this.swapForm.nulsAmount;
             let myBusd = this.swapForm.usdAmount;
-
             let zero = new ethers.utils.BigNumber('0');
-            let myLp = await this.getUserLp(farmsContract, NULS_BUSD_ID, userAddress, provider);
-            if (zero.eq(myLp)) {
-              this.swapValue = {error: "此账户无效"};
-              return false;
-            }
-            result._01 = "我的LP（流动性份额）: " + ethers.utils.formatEther(myLp);
-            let totalSupply = await this.getTotalSupplyOfLp(lpContract, provider);
-            result._02 = "LP总流通量: " + ethers.utils.formatEther(totalSupply);
-            let yz = new ethers.utils.BigNumber(ethers.utils.parseEther(myLp.toString())).div(new ethers.utils.BigNumber(totalSupply));
-            let reserves = await this.getReservesOfLp(lpContract, provider);
-            let _nuls = nulsIndex === 0 ? reserves._reserve0 : reserves._reserve1;
-            let _busd = nulsIndex === 0 ? reserves._reserve1 : reserves._reserve0;
-            result._03 = "流动池的 NULS: " + ethers.utils.formatUnits(_nuls, 8);
-            result._04 = "流动池的 USD: " + ethers.utils.formatEther(_busd);
 
-            let usdNumber = _busd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 8 + 4)));
-            let nulsNumber = _nuls.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
-            let _price = usdNumber.div(nulsNumber);
-            let nulsPrice = ethers.utils.formatUnits(_price, 4);
-            this.swapForm.nulsPrice = nulsPrice;
-            result._00 = "当前NULS价格: " + nulsPrice + " USD/NULS";
-            result._05 = "我提供了 NULS: " + myNuls;
-            result._06 = "我提供了 USD: " + myBusd;
-            let nowNuls = _nuls.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
-            let nowBusd = _busd.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
-            result._07 = "我能换出的 NULS: " + ethers.utils.formatUnits(nowNuls, 8);
-            result._08 = "我能换出的 USD: " + ethers.utils.formatUnits(nowBusd, 18)
-            let dNuls = nowNuls.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myNuls, 8)));
-            let flagNuls = dNuls.lt(zero) ? '少' : '多';
-            let dBusd = nowBusd.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myBusd, 18)));
-            let flagBusd = dBusd.lt(zero) ? '少' : '多';
+            if (this.swapForm.swap === '1' || this.swapForm.swap === '2') {
+              let NULS_BUSD_ID = dataSwap.NULS_BUSD_ID;
+              let myLp = await this.getUserLp(farmsContract, NULS_BUSD_ID, userAddress, provider);
+              if (zero.eq(myLp)) {
+                this.swapValue = {error: "此账户无效"};
+                return false;
+              }
+              result._01 = "我的LP（流动性份额）: " + ethers.utils.formatEther(myLp);
+              let totalSupply = await this.getTotalSupplyOfLp(lpContract, provider);
+              result._02 = "LP总流通量: " + ethers.utils.formatEther(totalSupply);
+              let yz = new ethers.utils.BigNumber(ethers.utils.parseEther(myLp.toString())).div(new ethers.utils.BigNumber(totalSupply));
+              let reserves = await this.getReservesOfLp(lpContract, provider);
+              let _nuls = nulsIndex === 0 ? reserves._reserve0 : reserves._reserve1;
+              let _busd = nulsIndex === 0 ? reserves._reserve1 : reserves._reserve0;
+              result._03 = "流动池的 NULS: " + ethers.utils.formatUnits(_nuls, 8);
+              result._04 = "流动池的 USD: " + ethers.utils.formatEther(_busd);
 
-            let nuls2usd = dNuls.abs().mul(new ethers.utils.BigNumber(ethers.utils.parseUnits(nulsPrice + '', 4))).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 4)));
-            result._09 = "NULS "+flagNuls+"了: "+ethers.utils.formatUnits(dNuls.abs(), 8)+"，折算成 USD: " + ethers.utils.formatUnits(nuls2usd, 8);
-            result._10 = " USD "+flagBusd+"了: " + ethers.utils.formatUnits(dBusd.abs(), 18);
+              let usdNumber = _busd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 8 + 4)));
+              let nulsNumber = _nuls.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
+              let _price = usdNumber.div(nulsNumber);
+              let nulsPrice = ethers.utils.formatUnits(_price, 4);
+              this.swapForm.nulsPrice = nulsPrice;
+              result._00 = "当前NULS价格: " + nulsPrice + " USD/NULS";
+              result._05 = "我提供了 NULS: " + myNuls;
+              result._06 = "我提供了 USD: " + myBusd;
+              let nowNuls = _nuls.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
+              let nowBusd = _busd.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
+              result._07 = "我能换出的 NULS: " + ethers.utils.formatUnits(nowNuls, 8);
+              result._08 = "我能换出的 USD: " + ethers.utils.formatUnits(nowBusd, 18)
+              let dNuls = nowNuls.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myNuls, 8)));
+              let flagNuls = dNuls.lt(zero) ? '少' : '多';
+              let dBusd = nowBusd.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myBusd, 18)));
+              let flagBusd = dBusd.lt(zero) ? '少' : '多';
 
-            let finalAward = dBusd.add(nuls2usd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 10))));
-            if (zero.gt(finalAward)) {
-              result._11 = "无常损失: " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
-            } else {
-              result._11 = "无常损失: 0，流动性实际收益:  " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
+              let nuls2usd = dNuls.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits(nulsPrice + '', 4))).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 4)));
+              result._09 = "NULS "+flagNuls+"了: "+ethers.utils.formatUnits(dNuls.abs(), 8)+"，折算成 USD: " + ethers.utils.formatUnits(nuls2usd.abs(), 8);
+              result._10 = " USD "+flagBusd+"了: " + ethers.utils.formatUnits(dBusd.abs(), 18);
+
+              let finalAward = dBusd.add(nuls2usd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 10))));
+              if (zero.gt(finalAward)) {
+                result._11 = "无常损失: " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
+              } else {
+                result._11 = "无常损失: 0，流动性实际收益:  " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
+              }
+              let totalAward = dBusd.mul(2);
+              if (zero.gt(totalAward)) {
+                result._12 = "金本位损失: " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
+              } else {
+                result._12 = "金本位收益:  " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
+              }
+            } else if (this.swapForm.swap === '3') {
+              let myLp = await this.getUserLpOfDodo(farmsContract, userAddress, provider);
+              if (zero.eq(myLp)) {
+                this.swapValue = {error: "此账户无效"};
+                return false;
+              }
+              result._01 = "我的LP（流动性份额）: " + ethers.utils.formatUnits(myLp, 8);
+              let totalSupply = await this.getTotalSupplyOfLpOfDodo(lpContract, provider);
+              result._02 = "LP总流通量: " + ethers.utils.formatUnits(totalSupply, 8);
+              let yz = new ethers.utils.BigNumber(ethers.utils.parseUnits(myLp, 8)).div(new ethers.utils.BigNumber(totalSupply));
+              let reserves = await this.getVaultReservesOfLp(lpContract, provider);
+              let _nvt = nulsIndex === 0 ? reserves[0] : reserves[1];
+              let _busd = nulsIndex === 0 ? reserves[1] : reserves[0];
+              result._03 = "流动池的 NVT: " + ethers.utils.formatUnits(_nvt, 8);
+              result._04 = "流动池的 USD: " + ethers.utils.formatEther(_busd);
+
+              let usdNumber = _busd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 8 + 4)));
+              let nvtNumber = _nvt.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 18)));
+              let _price = usdNumber.div(nvtNumber);
+              let nvtPrice = ethers.utils.formatUnits(_price, 4);
+              this.swapForm.nvtPrice = nvtPrice;
+              result._00 = "当前NVT价格: " + nvtPrice + " USD/NVT";
+              result._05 = "我提供了 NVT: " + myNuls;
+              result._06 = "我提供了 USD: " + myBusd;
+              let nowNvt = _nvt.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 8)));
+              let nowBusd = _busd.mul(yz).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 8)));
+              result._07 = "我能换出的 NVT: " + ethers.utils.formatUnits(nowNvt, 8);
+              result._08 = "我能换出的 USD: " + ethers.utils.formatUnits(nowBusd, 18)
+              let dNvt = nowNvt.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myNuls, 8)));
+              let flagNvt = dNvt.lt(zero) ? '少' : '多';
+              let dBusd = nowBusd.sub(new ethers.utils.BigNumber(ethers.utils.parseUnits(myBusd, 18)));
+              let flagBusd = dBusd.lt(zero) ? '少' : '多';
+
+              let nvt2usd = dNvt.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits(nvtPrice + '', 4))).div(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 4)));
+              result._09 = "NVT "+flagNvt+"了: "+ethers.utils.formatUnits(dNvt.abs(), 8)+"，折算成 USD: " + ethers.utils.formatUnits(nvt2usd.abs(), 8);
+              result._10 = " USD "+flagBusd+"了: " + ethers.utils.formatUnits(dBusd.abs(), 18);
+
+              let finalAward = dBusd.add(nvt2usd.mul(new ethers.utils.BigNumber(ethers.utils.parseUnits('1', 10))));
+              if (zero.gt(finalAward)) {
+                result._11 = "无常损失: " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
+              } else {
+                result._11 = "无常损失: 0，流动性实际收益:  " + ethers.utils.formatUnits(finalAward.abs(), 18) + " USD";
+              }
+              let totalAward = dBusd.mul(2);
+              if (zero.gt(totalAward)) {
+                result._12 = "金本位损失: " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
+              } else {
+                result._12 = "金本位收益:  " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
+              }
             }
-            let totalAward = dBusd.mul(2);
-            if (zero.gt(totalAward)) {
-              result._12 = "金本位损失: " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
-            } else {
-              result._12 = "金本位收益:  " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
-            }
+
             this.loading = false;
             this.swapValue = result;
             // 设置 cookies
@@ -755,6 +836,28 @@
       async getReservesOfLp(lpContract, provider) {
         let contract = new ethers.Contract(lpContract, this.ethersSetting.lpAbiFragment, provider);
         return await contract.getReserves().then((reserves) => {
+          return reserves;
+        });
+      },
+
+      async getTotalSupplyOfLpOfDodo(lpContract, provider) {
+        let contract = new ethers.Contract(lpContract, this.ethersSetting.dodoLpAbiFragment, provider);
+        return await contract.totalSupply().then((totalSupply) => {
+          // console.log(totalSupply.toString());
+          return totalSupply.toString();
+        });
+      },
+
+      async getUserLpOfDodo(farmsContract, userAddress, provider) {
+        let contract = new ethers.Contract(farmsContract, this.ethersSetting.dodoFarmAbiFragment, provider);
+        return await contract.balanceOf(userAddress).then((info) => {
+          return info.toString();
+        });
+      },
+
+      async getVaultReservesOfLp(lpContract, provider) {
+        let contract = new ethers.Contract(lpContract, this.ethersSetting.dodoLpAbiFragment, provider);
+        return await contract.getVaultReserve().then((reserves) => {
           return reserves;
         });
       }
