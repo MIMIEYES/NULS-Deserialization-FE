@@ -1,8 +1,8 @@
 <template>
-  <div class="block_height">
+  <!--<div class="block_height">
     <i class="el-icon-s-grid fCN"></i>
     <span> {{height}} </span>
-  </div>
+  </div>-->
 </template>
 
 <script>
@@ -13,12 +13,12 @@
       };
     },
     created() {
-      this.getBestBlockHeader();
+      // this.getBestBlockHeader();
     },
     mounted() {
-      setInterval(() => {
+      /*setInterval(() => {
         this.getBestBlockHeader()
-      }, 10000)
+      }, 10000)*/
     },
     methods: {
 

@@ -93,12 +93,12 @@
           </json-viewer>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="无常损失计算" name="four">
+      <!--<el-tab-pane label="无常损失计算" name="four">
         <div class="fl w_f">
           <el-form :model="swapForm" :rules="swapRules" ref="swapForm" label-width="110px" class="swap_form">
             <el-form-item label="流动性池" prop="pool" >
               <el-input v-model="swapForm.pool" :readonly="true" >NULS-USD</el-input>
-              <!--NULS-USD-->
+              &lt;!&ndash;NULS-USD&ndash;&gt;
             </el-form-item>
             <el-form-item label="接入网络" prop="swap">
               <el-radio-group v-model="swapForm.swap">
@@ -128,17 +128,17 @@
           <json-viewer :value="swapValue" :expand-depth="5" copyable>
           </json-viewer>
         </div>
-      </el-tab-pane>
+      </el-tab-pane>-->
     </el-tabs>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
-  // import ethers from 'ethers'
   let ethers = require('ethers');
 
   export default {
+
     data() {
       return {
         loading: false,
@@ -694,7 +694,6 @@
                 result._12 = "金本位收益:  " + ethers.utils.formatUnits(totalAward.abs(), 18) + " USD";
               }
             }
-
             this.loading = false;
             this.swapValue = result;
             // 设置 cookies
